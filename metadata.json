@@ -1,0 +1,6 @@
+{
+  "name": "Telia Tv",
+  "description": "Plateforme journalistique et média professionnel de Mangwa Thérèse. Analyses d'actualité, dossiers et enquêtes, émissions de radio/télévision, podcasts et diffusion en direct avec salon de chat interactif.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

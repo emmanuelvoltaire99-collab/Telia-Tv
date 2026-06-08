@@ -1,0 +1,209 @@
+{
+  "users": [
+    {
+      "id": "admin-1",
+      "email": "therese.mangwa@teliatv.com",
+      "name": "Mangwa Thérèse",
+      "role": "admin",
+      "registeredAt": "2026-06-08T17:40:29.011Z",
+      "avatarUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200",
+      "bio": "Journaliste | Rédactrice | Reporter Multimédia. Diplômée en Journalisme et Communication, passionnée par la collecte, le traitement et la diffusion de l'information fiable de proximité."
+    },
+    {
+      "id": "member-demo",
+      "email": "membre@demo.fr",
+      "name": "Jean Dupont",
+      "role": "member",
+      "registeredAt": "2026-06-08T17:40:29.012Z",
+      "avatarUrl": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200"
+    }
+  ],
+  "articles": [
+    {
+      "id": "art-1",
+      "titleFr": "Phénomène Mokolo : Comment les 'sauveteurs' de fripes dictent la mode sur TikTok Cameroun",
+      "titleEn": "Mokolo Phenomenon: How thrift sellers dictate fashion trends on Cameroon TikTok",
+      "contentFr": "La domination de la street-fashion à Yaoundé s'est largement déplacée du bitume physique vers l'arène virtuelle des flux en direct sur les réseaux sociaux.\n\n### Des étals de Mokolo à l'écran vertical\n\nÀ elle seule, la friperie de Mokolo ou de Mvan alimente plus de 70 % de la jeunesse branchée du Cameroun. Mais aujourd'hui, pour dénicher les pièces rares (les fameux 'premiers choix'), plus besoin de se bousculer sous le soleil de Yaoundé. Des jeunes vendeurs particulièrement inspirés, munis de simples smartphones suspendus à des lampes circulaires, transforment leurs boxes étroits en véritables studios de télévision interactifs.\n\n### L'art oratoire et le buzz comme arme de marketing\n\nLe succès de ces diffusions repose sur des codes extrêmement précis de divertissement social : des rimes improvisées en argot local ('le mboa', 'le pindi'), une musique 'Mbolé' ultra-dynamique en arrière-plan, et des comptes de rebours théâtraux pour introduire chaque vêtement. Cette théâtralisation de la négociation pousse l'audimat à interagir massivement à coup de cœurs et de partages, propulsant les algorithmes nationaux au profit d'une nouvelle vague de micro-entrepreneurs autodidactes.\n\n### Un nouveau modèle socio-économique informel\n\nCes créateurs d'un genre nouveau ne se contentent plus de vendre au Cameroun : ils reçoivent des paiements par Mobile Money venant de la diaspora à Paris ou Bruxelles. En fusionnant la débrouillardise locale avec la puissance des réseaux sociaux, les sauveteurs de Mokolo inventent une nouvelle voie de réussite médiatique et commerciale pour la jeunesse camerounaise.",
+      "contentEn": "The dominance of street-fashion in Yaoundé has largely transitioned from physical markets to the virtual arena of live broadcasts on social media platforms.\n\n### From Mokolo's Stalls to the Vertical Screen\n\nBy itself, thrift clothing from Mokolo or Mvan markets supplies over 70% of Cameroon’s trendy youth. But today, finding rare items (the famous 'first choices') no longer requires pushing through the Yaoundé crowd. Inspired young vendors, equipped with simple smartphones and ring lights, are turning narrow market stalls into interactive broadcast hubs.\n\n### Wordplay and Viral Beats as Marketing Assets\n\nThe success of these live streams is built on strict social entertainment rules: rhythmic slang, fast-paced 'Mbolé' beats playing in the background, and highly theatrical countdowns before showcasing each item. This unique live bidding system prompts the audience to react and share, gaming local algorithms in favor of a new class of self-taught digital micro-entrepreneurs.\n\n### A New Informal Socio-Economic Model\n\nThese modern street creators no longer limit their sales to Cameroon; they collect Mobile Money payments from diaspora buyers in Paris or Brussels. By merging local hustle with global social reach, Mokolo's thrift sellers are mapping out a new path of media and commercial success for Central African youth.",
+      "category": "Réseaux Sociaux",
+      "image": "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=800",
+      "author": "Mangwa Thérèse",
+      "date": "2026-06-05",
+      "readTime": 5,
+      "published": true,
+      "views": 845
+    },
+    {
+      "id": "art-2",
+      "titleFr": "Fait Divers & Rumeurs WhatsApp : Derrière la fausse panique de la sirène des chutes de la Lobé à Kribi",
+      "titleEn": "WhatsApp Wildfire: Inside the Fake Panic over the Water Spirit Sighting in Kribi",
+      "contentFr": "Une courte vidéo de piètre qualité partagée dans des groupes de discussion familiaux a suffi à raviver les légendes ancestrales et à vider les plages de Kribi pendant tout un week-end.\n\n### L'emballement d'une rumeur numérique de proximité\n\nLe phénomène a débuté par un message vocal WhatsApp alarmant, accompagné d'une vidéo floue prétendant montrer l'apparition d'un esprit aquatique de renom ('Mami Wata') au milieu de la spectaculaire confluence fluviale des chutes de la Lobé. En moins de 24 heures, le document a fait le tour du pays, générant des centaines de partages et suscitant l'inquiétude sincère des commerçants locaux et des touristes.\n\n### L'anatomie d'une manipulation de pixels\n\nUne analyse image par image a rapidement révélé la supercherie : il s'agissait simplement d'un montage maladroit superposant un filtre de lueur holographique issu d'un jeu vidéo sur une authentique vidéo touristique de la Lobé. Pourtant, la force de la tradition orale combinée à la viralité instantanée des applications de messagerie a devancé toute démarche logique ou critique.\n\n### Le rôle crucial de la veille citoyenne et du fact-checking\n\nCet incident met en lumière la fragilité d'un espace public submergé par les fausses nouvelles visuelles. Pour rassurer la population, Telia Tv a mené l'enquête auprès des piroguiers locaux et des autorités couturières traditionnelles Batanga, rappelant la nécessité absolue de former la population à la vérification des sources à l'ère du smartphone roi.",
+      "contentEn": "A grainy video clip shared inside private family group chats was all it took to stir age-old local legends and keep tourists off the beaches of Kribi for a whole weekend.\n\n### The Lightning-Fast Spread of a Hyper-Local Rumor\n\nThe panic started with an urgent WhatsApp voice note combined with an out-of-focus clip claiming to show a mythical water spirit ('Mami Wata') emerging from the famous Lobé Falls. Within 24 hours, the file circulated nationwide, causing real concern among seaside local business operators and visitors.\n\n### Dissecting a Pixel-Level Manipulation\n\nA basic frame-by-frame critique quickly exposed the hoax: a simple video-game glow filter was superimposed onto old tourist footage. Yet, the emotional resonance of traditional oral folklore combined with instantaneous smartphone sharing easily bypassed standard analytical verification.\n\n### The Urgent Need for Grassroot Fact-Checking\n\nThis incident highlights how vulnerable digital micro-spaces are to highly visual misinformation. To clear the air, Telia Tv interviewed local wooden boat operators and Batanga customary authorities, demonstrating that smartphone literacy and fact-checking have become essential tools for community safety.",
+      "category": "Fact-checking",
+      "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800",
+      "author": "Mangwa Thérèse",
+      "date": "2026-06-01",
+      "readTime": 4,
+      "published": true,
+      "views": 620
+    },
+    {
+      "id": "art-3",
+      "titleFr": "La bataille du Ndolé 2.0 : Quand notre art culinaire national enflamme Facebook et Twitter",
+      "titleEn": "The Ndolé 2.0 Dispute: When Cameroon's National Dish Teases Facebook & Twitter Spheres",
+      "contentFr": "Lorsqu'une célèbre blogueuse culinaire a proposé une recette alléguée 'saine' du Ndolé sans huile de palme et à base d'épinards, elle s'est heurtée à un véritable tollé numérique patriotique enflammant la twittosphère camerounaise.\n\n### Le Ndolé, un pilier sacré intouchable\n\nPour les Camerounais, la cuisine n'est pas un simple divertissement de flux TikTok : c'est un totem culturel de premier ordre. Le Ndolé (élaboré à partir de feuilles amères de Vernonia, d'arachides fraîches cuites, d'écrevisses séchées et d'une huile soigneusement infusée aux oignons) possède des règles immémoriales à Douala et Yaoundé. Suggérer de remplacer les herbes amères traditionnelles par des légumes banals a été vécu comme un véritable sacrilège identitaire.\n\n### Le choc des générations et de la diaspora\n\nLe débat en ligne s'est rapidement transformé en un affrontement passionnant entre, d'une part, une jeunesse de la diaspora aspirant à des alternatives diététiques modernes ou rapides, et d'autre part, les gardiens locaux de la tradition culinaire armés d'un sens de l'autodérision extraordinaire. Plus de 15 000 commentaires sous le même mot-clic ont prouvé que la gastronomie reste l'un des plus puissants vecteurs de mobilisation nationale.",
+      "contentEn": "When a popular food blogger posted a 'healthy' Ndolé recipe removing palm oil and substituting traditional bitterleaf with standard spinach, she unleashed a patriotic wave of social keyboard combat.\n\n### Cameroon's Unreachable Culinary Anchor\n\nIn Cameroon, food is far from minor social content. The traditional Ndolé—made from slow-cooked Vernonia leaves, fresh groundnut paste, dried crayfish, and onion-infused oil—rules with precise, timeless standards. Suggesting a diet-spinach replacement was widely treated as cultural heresy.\n\n### Diaspora Modernity vs. Local Heritage\n\nThe comment thread rapidly mutated into a fascinating standoff. On solar devices across Douala and Brussels, diaspora health advocates squared off with home-grown traditional cooks, yielding over 15,000 engaging posts. This case study shows how heritage cuisine remains a great unifying and highly interactive pillar of the national identity.",
+      "category": "Culture & Société",
+      "image": "https://images.unsplash.com/photo-1606787366850-de6330128bfc?auto=format&fit=crop&q=80&w=800",
+      "author": "Mangwa Thérèse",
+      "date": "2026-05-28",
+      "readTime": 6,
+      "published": true,
+      "views": 1054
+    }
+  ],
+  "newsList": [
+    {
+      "id": "news-1",
+      "titleFr": "Yaoundé : Une coupure géante d'eau à Bastos mobilise les influenceurs locaux",
+      "titleEn": "Yaoundé: Massive Water Shortage in Bastos Prompts Local Influencer Campaign",
+      "contentFr": "Plusieurs créateurs de contenu s'allient sur les réseaux sociaux pour coordonner une livraison d'urgence en eau potable pour les centres sociaux d'enfants.",
+      "contentEn": "Several digital creators team up on social media pages to coordinate drinking water delivery caravans for under-supported infant care centers.",
+      "date": "2026-06-08T15:30:00Z",
+      "published": true
+    },
+    {
+      "id": "news-2",
+      "titleFr": "TikTok Cameroun : Plus de 5 millions d'utilisateurs actifs mensuels franchis",
+      "titleEn": "TikTok Cameroon: Over 5 Million Active Monthly Users Record Broken",
+      "contentFr": "Le Cameroun s'impose comme la plaque tournante créative d'Afrique Centrale grâce au boom de l'entrepreneuriat numérique informel et aux challenges interactifs.",
+      "contentEn": "Cameroon claims the top creative digital spot in Central Africa with massive growth in informal business streaming and hyper-local media challenges.",
+      "date": "2026-06-07T09:12:00Z",
+      "published": true
+    },
+    {
+      "id": "news-3",
+      "titleFr": "Musique : Le rythme urbain 'Mbolé' explose les tendances Reels régionales",
+      "titleEn": "Music Trend: Cameroon's 'Mbolé' Streets Beats Explodes Across Regional Reels",
+      "contentFr": "Né dans le creuset populaire de Yaoundé (Mvog-Ada), ce style rythmique unique conquiert désormais les créateurs de tout le continent noir.",
+      "contentEn": "Born in the popular areas of Yaoundé (Mvog-Ada), this energetic street beat is taking over social media feeds across sub-Saharan accounts.",
+      "date": "2026-06-06T21:44:00Z",
+      "published": true
+    }
+  ],
+  "podcasts": [
+    {
+      "id": "pod-1",
+      "titleFr": "Épisode 24 : L'essor du journalisme citoyen face aux rumeurs TikTok",
+      "titleEn": "Episode 24: The Rise of Citizen Journalism vs. Smartphone Gossips",
+      "descriptionFr": "Comment faire la part des choses entre information locale vérifiée et faux 'scoops' sensationnels sur Twitter/X au Cameroun ? Clés de déchiffrage médiatique.",
+      "descriptionEn": "How to differentiate verified community stories from sensational clickbait running rampant across TikTok and Twitter inside Central Africa.",
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      "imageUrl": "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=400",
+      "guests": [
+        "Mangwa Thérèse",
+        "Ambe Collins"
+      ],
+      "duration": "45:20",
+      "date": "2026-06-03",
+      "published": true
+    },
+    {
+      "id": "pod-2",
+      "titleFr": "Épisode 23 : Le Mbolé et le Rap de Douala sous l'œil de la sociologie numérique",
+      "titleEn": "Episode 23: Douala’s Street Sounds Captured by Cultural Algorithms",
+      "descriptionFr": "Décryptage de la manière dont les musiques urbaines camerounaises passent des rues de Douala et Yaoundé aux millions d'écoutes mondiales grâce aux défis de danse.",
+      "descriptionEn": "Analyzing how Cameroonian street music ascends to viral worldwide distribution via challenges and short-form visual platforms.",
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+      "imageUrl": "https://images.unsplash.com/photo-1551244072-5d12893278ab?auto=format&fit=crop&q=80&w=400",
+      "guests": [
+        "Mangwa Thérèse",
+        "Dr. Danielle Eyolo"
+      ],
+      "duration": "38:45",
+      "date": "2026-05-25",
+      "published": true
+    }
+  ],
+  "liveSessions": [
+    {
+      "id": "live-session-1",
+      "titleFr": "Grand Débat en Direct : Réseaux sociaux & Dérives de l'information au Cameroun",
+      "titleEn": "Live Debate: Social Media trends and Information Integrity in Cameroon",
+      "descriptionFr": "Mangwa Thérèse reçoit des blogueurs et journalistes de Douala et Yaoundé pour débattre des nouveaux défis de la vérification de l'information immédiate.",
+      "descriptionEn": "Mangwa Thérèse hosts leading local bloggers and researchers to address fact-checking and sensationalism in the Central African digital space.",
+      "date": "2026-06-08",
+      "time": "18:00",
+      "status": "live",
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
+    },
+    {
+      "id": "live-session-2",
+      "titleFr": "Création de Contenus : Économie créative et monétisation locale",
+      "titleEn": "Creator Economy: Making a Living from Digital Content in Central Africa",
+      "descriptionFr": "Comment vivre de sa plume numérique et de ses reportages vidéo sans tomber dans le piège du sensationnalisme stérile et des buzz nuisibles ?",
+      "descriptionEn": "A masterclass on community-building, brand partnerships, and sustainable creator models without relying on toxic sensational clicks.",
+      "date": "2026-06-12",
+      "time": "14:00",
+      "status": "upcoming"
+    }
+  ],
+  "liveMessages": [
+    {
+      "id": "msg-1",
+      "sessionId": "live-session-1",
+      "userId": "member-demo",
+      "userName": "Jean Dupont",
+      "userRole": "member",
+      "message": "Bonsoir Thérèse, d'accord sur le constat du rôle de TikTok, mais que pensez-vous de la professionnalisation réelle des créateurs de contenu locaux ?",
+      "timestamp": "2026-06-08T17:35:29.012Z",
+      "isQuestion": true
+    },
+    {
+      "id": "msg-2",
+      "sessionId": "live-session-1",
+      "userId": "admin-1",
+      "userName": "Mangwa Thérèse",
+      "userRole": "admin",
+      "message": "Bienvenue à tous sur le direct ! Je répondrai aux questions dans la deuxième partie de l'émission. Continuez à soumettre vos questions ici.",
+      "timestamp": "2026-06-08T17:37:59.012Z",
+      "isQuestion": false
+    }
+  ],
+  "comments": [
+    {
+      "id": "comm-1",
+      "targetId": "art-1",
+      "targetType": "article",
+      "userId": "member-demo",
+      "userName": "Jean Dupont",
+      "content": "Excellent résumé ! L'ambiance sonore du Mbolé et le brio oratoire des sauveteurs de Mokolo sont vraiment l'âme digitale de notre jeunesse.",
+      "date": "2026-06-06T18:30:00Z"
+    },
+    {
+      "id": "comm-2",
+      "targetId": "pod-1",
+      "targetType": "podcast",
+      "userId": "member-demo",
+      "userName": "Jean Dupont",
+      "content": "Le passage sur l'indépendance de la presse citoyenne face à l'immédiateté toxique était éclairant. Merci à vous, Thérèse !",
+      "date": "2026-06-04T10:15:00Z"
+    }
+  ],
+  "contacts": [
+    {
+      "id": "cont-1",
+      "name": "Canal 2 International (Yaoundé)",
+      "email": "contact@canal2international.tv",
+      "subject": "Invitation - Débat Télévisé Décryptage",
+      "message": "Bonjour Thérèse, nous avons suivi avec un immense intérêt votre article sur le phénomène des sauveteurs de Mokolo sur TikTok. Seriez-vous disponible pour intervenir en tant qu'experte invitée lors de notre grande émission sociétale ce dimanche ?",
+      "date": "2026-06-07T14:22:00Z",
+      "read": false
+    }
+  ],
+  "favorites": {
+    "member-demo": [
+      "art-1"
+    ]
+  }
+}
