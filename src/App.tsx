@@ -16,6 +16,7 @@ import {
 import { translations } from './translations.ts';
 import AudioPlayer from './components/AudioPlayer.tsx';
 import LiveChat from './components/LiveChat.tsx';
+import journalistProfilePhoto from './assets/images/journalist_profile_photo_new_1781019175427.png';
 
 export default function App() {
   const [lang, setLang] = useState<'fr' | 'en'>('fr');
@@ -37,6 +38,21 @@ export default function App() {
   const [contacts, setContacts] = useState<ContactMessage[]>([]);
   const [favorites, setFavorites] = useState<Article[]>([]);
   const [activeEpisode, setActiveEpisode] = useState<PodcastEpisode | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [userBioFr, setUserBioFr] = useState('');
+  const [userBioEn, setUserBioEn] = useState('');
+  const [userProfileImage, setUserProfileProfileImage] = useState(journalistProfilePhoto);
+
+  useEffect(() => {
+    const savedBioFr = localStorage.getItem('user-bio-fr');
+    const savedBioEn = localStorage.getItem('user-bio-en');
+    const savedImage = localStorage.getItem('user-profile-image');
+    if (savedBioFr) setUserBioFr(savedBioFr);
+    else setUserBioFr(translations.fr.about.bioText);
+    if (savedBioEn) setUserBioEn(savedBioEn);
+    else setUserBioEn(translations.en.about.bioText);
+    if (savedImage) setUserProfileProfileImage(savedImage);
+  }, []);
 
   // Filters & Interactivity
   const [searchQuery, setSearchQuery] = useState('');
@@ -384,6 +400,55 @@ export default function App() {
     }
   };
 
+  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const result = event.target?.result as string;
+        setUserProfileProfileImage(result);
+        localStorage.setItem('user-profile-image', result);
+        showAlert("Photo de profil mise à jour !", "success");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const saveProfile = () => {
+      localStorage.setItem('user-bio-fr', userBioFr);
+      localStorage.setItem('user-bio-en', userBioEn);
+      setIsEditing(false);
+      showAlert("Informations mises à jour !", "success");
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'article-image' | 'podcast-image' | 'podcast-audio') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 50 * 1024 * 1024) {
+      showAlert("Le fichier est trop volumineux (max 50 Mo)", "error");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        if (type === 'article-image') {
+          setArtForm(prev => ({ ...prev, image: result }));
+        } else if (type === 'podcast-image') {
+          setPodForm(prev => ({ ...prev, imageUrl: result }));
+        } else if (type === 'podcast-audio') {
+          setPodForm(prev => ({ ...prev, audioUrl: result }));
+        }
+        showAlert(`Fichier "${file.name}" chargé avec succès !`, "success");
+      }
+    };
+    reader.onerror = () => {
+      showAlert("Erreur lors de la lecture du fichier", "error");
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Admin CRUD helper requests
   const adminAddArticle = async (e: any) => {
     e.preventDefault();
@@ -433,6 +498,13 @@ export default function App() {
     e.preventDefault();
     const token = localStorage.getItem('auth-token');
     const guestsArr = podForm.guests.split(',').map(s => s.trim()).filter(Boolean);
+    const updatedPod = {
+      ...podForm,
+      titleEn: podForm.titleEn || podForm.titleFr,
+      descriptionEn: podForm.descriptionEn || podForm.descriptionFr,
+      imageUrl: podForm.imageUrl || 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=300',
+      guests: guestsArr
+    };
     try {
       const res = await fetch('/api/podcasts', {
         method: 'POST',
@@ -440,7 +512,7 @@ export default function App() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ ...podForm, guests: guestsArr })
+        body: JSON.stringify(updatedPod)
       });
       if (res.ok) {
         showAlert("Épisode de podcast publié !", "success");
@@ -782,6 +854,16 @@ export default function App() {
 
       {/* MOBILE SCROLL NAVIGATION BAR */}
       <nav id="mobile-scroll-nav" className="flex lg:hidden bg-[#fbfbf9] px-4 py-2.5 border-b border-[#e5e5e2] gap-5 overflow-x-auto whitespace-nowrap text-[9px] font-black uppercase tracking-widest text-[#6b6b6b] scrollbar-none select-none flex-shrink-0">
+        {currentUser?.role === 'admin' && (
+          <button 
+            id="mobile-nav-admin"
+            onClick={() => { setCurrentTab('admin'); setSelectedArticleId(null); }}
+            className={`pb-0.5 transition uppercase font-black text-pink-700 flex items-center gap-1.5 ${currentTab === 'admin' ? 'text-black border-b border-black' : ''}`}
+          >
+            <ShieldAlert size={11} className="text-[#be185d]" />
+            Console Admin
+          </button>
+        )}
         <button 
           id="mobile-nav-about"
           onClick={() => { setCurrentTab('about'); setSelectedArticleId(null); }}
@@ -900,12 +982,12 @@ export default function App() {
         <section id="sidebar-left" className="col-span-3 border-r border-[#e5e5e2] hidden md:flex flex-col p-6 overflow-y-auto">
           
           <div className="mb-6 pb-6 border-b border-[#e5e5e2]">
-             <div className="aspect-[3/4] bg-[#d1d5db] overflow-hidden grayscale mb-4 relative group">
+             <div className="bg-[#d1d5db] overflow-hidden mb-4 relative group">
                <img 
                  id="journalist-main-photo"
-                 src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=350" 
+                 src={userProfileImage}
                  alt="Mangwa Thérèse" 
-                 className="w-full h-full object-cover grayscale contrast-125 transition duration-500 hover:scale-105"
+                 className="w-full h-auto object-contain transition duration-500"
                />
                <div className="absolute inset-0 bg-[#be185d]/10 mix-blend-multiply"></div>
                <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black to-transparent">
@@ -978,9 +1060,31 @@ export default function App() {
           {/* ABOUT TAB */}
           {currentTab === 'about' && (
             <div id="tab-about-view" className="space-y-8 animate-fade-in text-left">
-              <h1 className="text-3xl font-serif font-black text-[#1a1a1a] pb-3 border-b border-[#e5e5e2]">
-                {t.about.title}
-              </h1>
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between pb-3 border-b border-[#e5e5e2] gap-4">
+                <h1 className="text-3xl font-serif font-black text-[#1a1a1a]">
+                  {t.about.title}
+                </h1>                <div className="flex gap-2">
+                    <button onClick={() => setIsEditing(!isEditing)} className="text-xs font-mono text-[#be185d] underline">
+                        {isEditing ? "Annuler" : "Modifier"}
+                    </button>
+                    {isEditing && (
+                        <button onClick={saveProfile} className="text-xs font-mono bg-[#be185d] text-white px-3 py-1 rounded">
+                            Sauvegarder
+                        </button>
+                    )}
+                </div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-mono text-stone-600">
+                  <span className="flex items-center gap-1.5 border-r border-[#e5e5e2] pr-4">
+                    <span className="text-[#be185d]">Tel:</span> +237 693 643 580
+                  </span>
+                  <span className="flex items-center gap-1.5 border-r border-[#e5e5e2] pr-4">
+                    <span className="text-[#be185d]">Email:</span> theresemangwa2376@gmail.com
+                  </span>
+                  <span className="flex items-center gap-1.5 pb-0.5">
+                    <span className="text-[#be185d]">Loc:</span> Yaoundé, Cameroun (Née le 15 Oct. 2001)
+                  </span>
+                </div>
+              </div>
 
               {/* Biography Section */}
               <div className="space-y-4">
@@ -988,94 +1092,185 @@ export default function App() {
                   {t.about.bioTitle}
                 </h3>
                 <div className="prose prose-stone leading-relaxed font-serif text-stone-700 space-y-4 text-sm">
-                  <p>{t.about.bioText}</p>
+                  {isEditing ? (
+                    <div className="space-y-4">
+                        <textarea 
+                            className="w-full h-40 p-2 border border-stone-300 rounded"
+                            value={lang === 'fr' ? userBioFr : userBioEn}
+                            onChange={(e) => lang === 'fr' ? setUserBioFr(e.target.value) : setUserBioEn(e.target.value)}
+                        />
+                        <div>
+                            <label className="block text-xs font-mono text-stone-600 mb-1">Changer la photo de profil</label>
+                            <input type="file" accept="image/*" onChange={handleProfileImageChange} />
+                        </div>
+                    </div>
+                  ) : (
+                    <p>{lang === 'fr' ? userBioFr : userBioEn}</p>
+                  )}
                   <p>
                     {lang === 'fr' 
                       ? "Mon objectif professionnel est de mettre mes compétences journalistiques au service de la promotion de l'information fiable, du développement social et de la valorisation des initiatives locales."
-                      : "My professional objective is to dedicate my journalistic skills to promoting reliable, public-interest news, fostering social development, and highlighting local grassroot initiatives."}
+                      : "My professional objective is to dedicate my journalistic skills to promoting reliable, public-interest news, fostering social development, and highlighting local grassroots initiatives."}
                   </p>
                 </div>
               </div>
 
               {/* Professional Journey (Parcours) & Experience & Expertise */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <h3 className="text-xs font-black uppercase tracking-wider text-[#be185d] font-mono">
-                    {lang === 'fr' ? "Parcours & Expérience" : "Journey & Experience"}
+                    {lang === 'fr' ? "Expérience Professionnelle" : "Professional Experience"}
                   </h3>
-                  <div className="space-y-4 font-serif text-stone-700">
-                    <div className="border-l-2 border-[#be185d]/40 pl-4 space-y-1">
-                      <span className="text-[9px] font-mono bg-pink-50 text-[#be185d] px-1 py-0.5 rounded font-bold font-sans">2024 - PRÉSENT</span>
-                      <h4 className="font-bold text-xs tracking-tight text-neutral-950 uppercase font-sans">
-                        {lang === 'fr' ? "Fondatrice & Reporter Principal, Telia Tv" : "Founder & Lead Reporter, Telia Tv"}
+                  <div className="space-y-6 font-serif text-stone-700">
+                    <div className="border-l-2 border-[#be185d] pl-4 space-y-1">
+                      <div className="flex items-baseline justify-between flex-wrap gap-2">
+                        <span className="text-[10px] font-mono bg-pink-50 text-[#be185d] px-1.5 py-0.5 rounded font-black font-sans uppercase">12/2025 - Présent (3 mois)</span>
+                        <span className="text-[10px] tracking-widest text-[#be185d] font-sans font-bold uppercase">CDD Principal</span>
+                      </div>
+                      <h4 className="font-bold text-xs tracking-tight text-neutral-950 uppercase font-sans mt-1">
+                        {lang === 'fr' ? "Journaliste Présentatrice" : "Journalist Host & Presenter"}
                       </h4>
-                      <p className="text-xs text-stone-600 mt-1">
-                        {lang === 'fr' ? "Création et structuration d'une plateforme d'information dynamique pour les questions de société et les initiatives collectives." : "Designing a dynamic news and media platform spotlighting local community progress projects."}
-                      </p>
+                      <div className="text-xs text-neutral-800 font-sans font-semibold mb-1">ONG PICHNET | Yaoundé</div>
+                      <ul className="text-xs text-stone-600 list-disc list-inside space-y-1 font-sans pl-1">
+                        <li>{lang === 'fr' ? "Présentatrice officielle du projet de formation \"Pays Protection Sociale\"." : "Official host of the \"Pays Protection Sociale\" training show project."}</li>
+                        <li>{lang === 'fr' ? "Journaliste active au sein de la cellule de communication interne et externe." : "Active journalist inside the corporate communications and media unit."}</li>
+                      </ul>
                     </div>
+
                     <div className="border-l-2 border-[#be185d]/40 pl-4 space-y-1">
-                      <span className="text-[9px] font-mono bg-pink-50 text-[#be185d] px-1 py-0.5 rounded font-bold font-sans">2021 - 2024</span>
-                      <h4 className="font-bold text-xs tracking-tight text-neutral-950 uppercase font-sans">
-                        {lang === 'fr' ? "Reporter d'Images & Rédactrice Multimédia" : "Video Journalist & Multimedia Reporter"}
+                      <div className="flex items-baseline justify-between flex-wrap gap-2">
+                        <span className="text-[10px] font-mono bg-stone-100 text-stone-700 px-1.5 py-0.5 rounded font-black font-sans uppercase">01/2022 - Présent (4 ans et 2 mois)</span>
+                      </div>
+                      <h4 className="font-bold text-xs tracking-tight text-neutral-950 uppercase font-sans mt-1">
+                        {lang === 'fr' ? "Encadreuse en Communication" : "Communication Officer & Mentor"}
                       </h4>
-                      <p className="text-xs text-stone-600 mt-1">
-                        {lang === 'fr' ? "Couverture d'actualités régionales, réalisation d'interviews exclusives et élaboration de contenus éducatifs ou sociaux." : "Coverage of regional affairs, conducting structured interviews, and creating social or educational video products."}
-                      </p>
+                      <div className="text-xs text-neutral-800 font-sans font-semibold mb-1">ONG PICHNET | Yaoundé</div>
+                      <ul className="text-xs text-stone-600 list-disc list-inside space-y-1 font-sans pl-1">
+                        <li>{lang === 'fr' ? "Supervision et accompagnement pédagogique de stagiaires dans la production de documentaires." : "Supervision and career support of media interns during documentary films production."}</li>
+                        <li>{lang === 'fr' ? "Initiation, tutorat et encadrement pratique aux techniques d'interview de terrain." : "Training and tutoring in field interviewing methodologies and formats."}</li>
+                      </ul>
                     </div>
+
                     <div className="border-l-2 border-[#be185d]/40 pl-4 space-y-1">
-                      <span className="text-[9px] font-mono bg-pink-50 text-[#be185d] px-1 py-0.5 rounded font-bold font-sans">2018 - 2021</span>
-                      <h4 className="font-bold text-xs tracking-tight text-neutral-950 uppercase font-sans">
-                        {lang === 'fr' ? "Formation Supérieure en Journalisme & Médias" : "Academic Degree in Journalism & Media"}
+                      <div className="flex items-baseline justify-between flex-wrap gap-2">
+                        <span className="text-[10px] font-mono bg-stone-100 text-stone-700 px-1.5 py-0.5 rounded font-black font-sans uppercase">07/2025 - 09/2025 & 07/2024 - 08/2024</span>
+                      </div>
+                      <h4 className="font-bold text-xs tracking-tight text-neutral-950 uppercase font-sans mt-1">
+                        {lang === 'fr' ? "Stagiaire en Journalisme" : "Journalism Intern"}
                       </h4>
-                      <p className="text-xs text-stone-600 mt-1">
-                        {lang === 'fr' ? "Diplômée en Journalisme et Communication. Maîtrise des principes déontologiques et des techniques de fact-checking." : "Bachelor degree in Journalism & Media Communication with focus on fact-checking, ethics, and investigative rules."}
-                      </p>
+                      <div className="text-xs text-neutral-800 font-sans font-semibold mb-1">Radio Royal FM 88.4 | Yaoundé, Cameroun</div>
+                      <ul className="text-xs text-stone-600 list-disc list-inside space-y-1 font-sans pl-1">
+                        <li>{lang === 'fr' ? "Propositions d'articles et rédaction de sujets adaptés aux grilles de la station." : "Pitching, editing, and drafting audio items matching program rubrics."}</li>
+                        <li>{lang === 'fr' ? "Participation active aux conférences de rédaction quotidiennes et régulières." : "Full participation in editorial planning and daily review panel sessions."}</li>
+                      </ul>
+                    </div>
+
+                    <div className="border-l-2 border-[#be185d]/40 pl-4 space-y-1">
+                      <div className="flex items-baseline justify-between flex-wrap gap-2">
+                        <span className="text-[10px] font-mono bg-stone-100 text-stone-700 px-1.5 py-0.5 rounded font-black font-sans uppercase">08/2023 - 08/2023</span>
+                      </div>
+                      <h4 className="font-bold text-xs tracking-tight text-neutral-950 uppercase font-sans mt-1">
+                        {lang === 'fr' ? "Stagiaire en Journalisme" : "Journalism Trainee"}
+                      </h4>
+                      <div className="text-xs text-neutral-800 font-sans font-semibold mb-1">Quotidien L'Économie | Yaoundé</div>
+                      <ul className="text-xs text-stone-600 list-disc list-inside space-y-1 font-sans pl-1">
+                        <li>{lang === 'fr' ? "Utilisation stratégique des médias sociaux pour promouvoir le contenu du journal." : "Strategic management of social platforms to engage readers and lift brand visibility."}</li>
+                        <li>{lang === 'fr' ? "Recherche approfondie et minutieuse de sources de données fiables." : "Rigorous source tracking and investigative cross-referencing."}</li>
+                      </ul>
                     </div>
                   </div>
                 </div>
 
-                {/* Domaines d'expertise & Reseaux Sociaux */}
+                {/* DOMAINES D'EXPERTISE, FORMATION & COMPETENCES */}
                 <div className="space-y-6">
-                  <div className="space-y-3">
+                  {/* Formation Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-black uppercase tracking-wider text-[#be185d] font-mono">
+                      {lang === 'fr' ? "Formation & Diplômes" : "Education & Academic Degrees"}
+                    </h3>
+                    <div className="space-y-4 font-serif text-stone-700">
+                      <div className="border-l-2 border-stone-300 pl-4 space-y-1">
+                        <span className="text-[9px] font-mono bg-stone-100 text-stone-800 px-1 py-0.5 rounded font-bold font-sans">01/2024 - 01/2025</span>
+                        <h4 className="font-bold text-xs tracking-tight text-neutral-950 uppercase font-sans">
+                          Licence Professionnelle en Journalisme
+                        </h4>
+                        <div className="text-xs text-[#be185d] font-sans font-semibold">ESSTIC | Ecole Supérieure des Sciences et Techniques de l'Information et de la Communication</div>
+                        <p className="text-xs text-stone-500 mt-1 font-sans">
+                          {lang === 'fr' ? "Formation d'excellence en journalisme de terrain, éthique média, techniques d'enquête et de fact-checking à Yaoundé." : "Comprehensive practical studies in field-interviewing, investigation methods, and media laws in Yaoundé."}
+                        </p>
+                      </div>
+
+                      <div className="border-l-2 border-stone-300 pl-4 space-y-1">
+                        <span className="text-[9px] font-mono bg-stone-100 text-stone-800 px-1 py-0.5 rounded font-bold font-sans">2020 - 2021</span>
+                        <h4 className="font-bold text-xs tracking-tight text-neutral-950 uppercase font-sans">
+                          Baccalauréat Littéraire (A4 ALL)
+                        </h4>
+                        <div className="text-xs text-stone-600 font-sans font-semibold">Collège Île Éducative | Yaoundé</div>
+                        <p className="text-xs text-stone-500 mt-0.5 font-sans">
+                          {lang === 'fr' ? "Spécialisation en lettres, langues vivantes et philosophie." : "Specialization in literature, modern languages, and communication."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Skills tags selection from CV */}
+                  <div className="space-y-3 pt-4 border-t border-[#e5e5e2]">
                     <h3 className="text-xs font-black uppercase tracking-wider text-[#be185d] font-mono">
                       {t.about.expertiseTitle}
                     </h3>
-                    <div className="flex flex-wrap gap-2 pt-1">
+                    <div className="flex flex-wrap gap-1.5 pt-1">
                       {[
-                        lang === 'fr' ? "Rédaction journalistique" : "Journalistic Writing",
-                        lang === 'fr' ? "Reporter de terrain" : "On-the-ground Reporting",
-                        lang === 'fr' ? "Techniques d'interview" : "Interview Techniques",
-                        lang === 'fr' ? "Présentation Radio & Télévision" : "Radio & TV Presenting",
-                        lang === 'fr' ? "Production Multimédia & Web" : "Multimedia & Web Production",
-                        lang === 'fr' ? "Montage Audio & Vidéo" : "Audio & Video Editing",
-                        lang === 'fr' ? "Fact-checking & Veille" : "Fact-checking & Media Watch",
-                        lang === 'fr' ? "Charte de Déontologique & Éthique" : "Journalism Ethics & Codes"
+                        lang === 'fr' ? "Présentation événementielle" : "Event Hosting & Hosting",
+                        lang === 'fr' ? "Animation Télé & Radio" : "TV & Radio Presenting",
+                        lang === 'fr' ? "Techniques d'interview" : "Interviewing Techniques",
+                        lang === 'fr' ? "Production Documentaire" : "Documentary Film Coaching",
+                        lang === 'fr' ? "Fact-checking & Enquêtes" : "Fact-checking & Investigations",
+                        lang === 'fr' ? "Stratégie Médias Sociaux" : "Social Media Outreach",
+                        lang === 'fr' ? "Rigueur administrative & professionnelle" : "Professional Rigor",
+                        lang === 'fr' ? "Microsoft Word / Excel" : "MS Word & Excel",
+                        lang === 'fr' ? "Esprit d'équipe & Intégrité" : "Team Player & Absolute Integrity",
+                        lang === 'fr' ? "Assiduité irréprochable" : "Assiduous Commitment",
                       ].map((item, idx) => (
-                        <span key={idx} className="px-3 py-1 bg-pink-50/50 border border-pink-100 text-[#be185d] text-xs font-serif rounded">
+                        <span key={idx} className="px-2.5 py-1 bg-pink-50/50 border border-pink-100/60 text-[#be185d] text-[10px] font-sans font-semibold rounded">
                           {item}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  {/* Social Networks Link */}
-                  <div className="space-y-3 pt-2 border-t border-[#e5e5e2]">
-                    <h4 className="text-xs font-black uppercase tracking-wider text-[#1a1a1a] font-mono">
-                      {lang === 'fr' ? "Réseaux Sociaux" : "Social Networks"}
+                  {/* Languages from CV */}
+                  <div className="space-y-3 pt-4 border-t border-[#e5e5e2]">
+                    <h4 className="text-xs font-black uppercase tracking-wider text-[#be185d] font-mono">
+                      {lang === 'fr' ? "Langues" : "Languages"}
                     </h4>
-                    <div className="flex flex-col gap-2 text-xs font-mono">
-                      <a href="https://bluesky.com" className="text-stone-600 hover:text-[#be185d] flex items-center gap-2 underline" target="_blank" rel="noreferrer">
-                        <span>→ Bluesky (@theresemangwa.journalist)</span>
-                      </a>
-                      <a href="https://linkedin.com" className="text-stone-600 hover:text-[#be185d] flex items-center gap-2 underline" target="_blank" rel="noreferrer">
-                        <span>→ LinkedIn (/in/mangwa-therese)</span>
-                      </a>
-                      <a href="https://twitter.com" className="text-stone-600 hover:text-[#be185d] flex items-center gap-2 underline" target="_blank" rel="noreferrer">
-                        <span>→ Twitter / X (@ThereseMangwa)</span>
-                      </a>
-                      <a href="https://rss.feed" className="text-stone-600 hover:text-[#be185d] flex items-center gap-2 underline" target="_blank" rel="noreferrer">
-                        <span>→ Flux RSS des Podcasts / RSS Audio</span>
-                      </a>
+                    <div className="grid grid-cols-2 gap-4 text-xs font-sans">
+                      <div className="bg-stone-50 p-2 border border-stone-200">
+                        <span className="font-bold block uppercase text-[10px] text-stone-800">{lang === 'fr' ? "Français" : "French"}</span>
+                        <span className="text-stone-500 font-mono text-[10px]">{lang === 'fr' ? "Bilingue" : "Bilingual"}</span>
+                      </div>
+                      <div className="bg-stone-50 p-2 border border-stone-200">
+                        <span className="font-bold block uppercase text-[10px] text-stone-800">{lang === 'fr' ? "Anglais" : "English"}</span>
+                        <span className="text-stone-500 font-mono text-[10px]">{lang === 'fr' ? "Intermédiaire" : "Intermediate"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Interests from CV */}
+                  <div className="space-y-2 pt-4 border-t border-[#e5e5e2]">
+                    <h4 className="text-xs font-black uppercase tracking-wider text-[#be185d] font-mono">
+                      {lang === 'fr' ? "Centres d'intérêt" : "Interests"}
+                    </h4>
+                    <div className="flex flex-wrap gap-2 text-xs font-sans">
+                      {[
+                        lang === 'fr' ? "🎵 Musique" : "🎵 Music",
+                        lang === 'fr' ? "📚 Lecture" : "📚 Reading",
+                        lang === 'fr' ? "✈️ Voyages" : "✈️ Travel",
+                        lang === 'fr' ? "🍳 Cuisine" : "🍳 Cooking"
+                      ].map((interest, idx) => (
+                        <span key={idx} className="px-3 py-1 bg-stone-100 rounded-full font-medium text-stone-700">
+                          {interest}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -1086,15 +1281,65 @@ export default function App() {
           {/* HOME TAB */}
           {currentTab === 'home' && (
             <div id="tab-home-view" className="space-y-8 animate-fade-in">
+              
+              <div className="block md:hidden border-b border-[#e5e5e2] pb-6 space-y-6 text-left">
+                <div className="flex gap-4 items-center bg-[#fafaf9] p-3 border border-stone-200">
+                  <div className="w-14 h-14 flex-shrink-0 relative border border-[#e5e5e2]">
+                    <img 
+                      src={userProfileImage} 
+                      alt="Mangwa Thérèse" 
+                      className="w-full h-full object-contain"
+                    />
+                    <div className="absolute inset-0 bg-[#be185d]/10 mix-blend-multiply"></div>
+                  </div>
+                  <div className="flex-1 space-y-0.5">
+                    <h2 className="text-xs font-sans font-black tracking-tight text-[#1a1a1a] uppercase">Mangwa Thérèse</h2>
+                    <p className="text-[10px] font-serif italic text-stone-600 leading-snug">
+                      {t.home.aboutBriefText}
+                    </p>
+                    <div className="flex gap-2 text-[8px] font-black uppercase tracking-widest text-[#be185d] pt-0.5">
+                      <button onClick={() => setCurrentTab('contact')} className="underline hover:text-[#b91c1c] transition-colors">Prendre Contact</button>
+                      <span className="text-stone-300">|</span>
+                      <button onClick={() => setCurrentTab('about')} className="underline hover:text-[#b91c1c] transition-colors">{t.nav.about}</button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile version of active live radio widget */}
+                <div className="bg-white border text-left p-4 flex flex-col gap-2 relative bg-[radial-gradient(#f0f0ee_1px,transparent_1px)] [background-size:16px_16px] border-[#1a1a1a] border-2">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-[8.5px] font-black uppercase tracking-widest text-[#be185d]">
+                      <span className="w-1.5 h-1.5 bg-[#be185d] rounded-full animate-ping"></span>
+                      {liveSession?.status === 'live' ? "EN DIRECT" : "PROCHAINE ÉMISSION"}
+                    </span>
+                    <span className="text-[8px] font-mono text-[#6b6b6b]">{liveSession?.date} {liveSession?.time}</span>
+                  </div>
+                  <h4 className="font-serif font-black text-xs text-[#1a1a1a] leading-tight">
+                    {liveSession ? (lang === 'fr' ? liveSession.titleFr : liveSession.titleEn) : "Pas de séance de radio live programmée"}
+                  </h4>
+                  {liveSession && (
+                    <p className="text-[10px] text-[#6b6b6b] font-serif italic line-clamp-2">
+                      {lang === 'fr' ? liveSession.descriptionFr : liveSession.descriptionEn}
+                    </p>
+                  )}
+                  <button 
+                    onClick={() => setCurrentTab('live')}
+                    className="w-full text-center py-2 bg-[#be185d] hover:bg-[#a2124a] text-white text-[9px] font-black uppercase tracking-widest transition duration-150"
+                  >
+                    Rejoindre l'Antenne →
+                  </button>
+                </div>
+              </div>
+
               <div className="flex flex-col pb-8 border-b border-[#e5e5e2]">
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#b91c1c] mb-2 font-mono">À LA UNE DE L'ENQUÊTE</span>
                 
                 {featuredArticle ? (
-                  <div id="homepage-featured-block" onClick={() => selectArticle(featuredArticle)} className="cursor-pointer group">
+                  <div id="homepage-featured-block" onClick={() => selectArticle(featuredArticle)} className="cursor-pointer group text-left">
                     <h1 className="text-3xl md:text-4xl font-serif font-black leading-[1.1] text-[#1a1a1a] mb-4 group-hover:text-[#b91c1c] transition-colors">
                       {lang === 'fr' ? featuredArticle.titleFr : featuredArticle.titleEn}
                     </h1>
-                    <div className="aspect-[16/9] w-full overflow-hidden grayscale contrast-125 mb-4 border border-[#e5e5e2]">
+                    <div className="aspect-[16/9] w-full overflow-hidden mb-4 border border-[#e5e5e2]">
                       <img src={featuredArticle.image} alt="Featured" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                     </div>
                     <p className="text-sm text-[#4a4a4a] leading-relaxed mb-4 italic font-serif line-clamp-3">
@@ -1106,16 +1351,16 @@ export default function App() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm font-serif italic text-[#6b6b6b]">Aucun grand dossier publié pour le moment.</p>
+                  <p className="text-sm font-serif italic text-[#6b6b6b] text-left">Aucun grand dossier publié pour le moment.</p>
                 )}
               </div>
 
               {/* Home Grid Section: Sub articles */}
               <div>
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1a1a1a] mb-6 font-mono border-b border-[#1a1a1a] pb-2">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1a1a1a] mb-6 font-mono border-b border-[#1a1a1a] pb-2 text-left">
                   {t.home.latestArticles}
                 </h3>
-                <div id="home-sub-articles-grid" className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="home-sub-articles-grid" className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
                   {articles.slice(1, 3).map((art) => (
                     <div 
                       key={art.id} 
@@ -1139,6 +1384,59 @@ export default function App() {
                   ))}
                 </div>
               </div>
+
+              {/* MOBILE ONLY NEWS BRIEF FEED & NEWSLETTER (Visible on mobile/tablet) */}
+              <div className="block lg:hidden pt-8 border-t border-[#e5e5e2] space-y-6 text-left">
+                <div>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1a1a1a] mb-3 font-mono">
+                    {t.home.latestNews} (Fil de brèves)
+                  </h3>
+                  <div className="space-y-4 divide-y divide-[#e5e5e2]">
+                    {newsList.slice(0, 3).map((item) => (
+                      <div key={item.id} className="pt-3 first:pt-0">
+                        <span className="text-[8px] font-mono text-stone-500">Fil d'info • {new Date(item.date).toLocaleDateString()}</span>
+                        <h4 className="text-xs font-serif font-black text-stone-950 mt-0.5 leading-snug">{lang === 'fr' ? item.titleFr : item.titleEn}</h4>
+                        <p className="text-[10.5px] text-stone-600 mt-1 leading-snug line-clamp-2">{lang === 'fr' ? item.contentFr : item.contentEn}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <button 
+                    onClick={() => setCurrentTab('news')} 
+                    className="text-[9px] font-black uppercase tracking-widest underline text-[#5a5a5a] hover:text-black mt-3 block"
+                  >
+                    Consulter le fil complet →
+                  </button>
+                </div>
+
+                <div className="bg-[#1a1a1a] text-white p-5 border-l-4 border-l-[#b91c1c] shadow-[4px_4px_0px_rgba(0,0,0,0.15)]">
+                  <h4 className="text-xs font-serif font-black italic text-stone-100 mb-1">{t.home.newsletterTitle}</h4>
+                  <p className="text-[9.5px] leading-relaxed text-[#a1a1a1] mb-3 uppercase tracking-wider font-mono">
+                    {t.home.newsletterSubtitle}
+                  </p>
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      showAlert(t.home.newsletterSuccess);
+                      (e.target as HTMLFormElement).reset();
+                    }} 
+                    className="flex flex-col sm:flex-row gap-2"
+                  >
+                    <input 
+                      type="email" 
+                      required
+                      placeholder="votre_email@teliatv.com" 
+                      className="bg-stone-800 border-b border-stone-600 text-xs py-1.5 px-2 focus:outline-none placeholder:text-stone-500 text-stone-200 flex-1"
+                    />
+                    <button 
+                      type="submit"
+                      className="text-[9px] font-black text-white bg-pink-700 hover:bg-[#be185d] py-1.5 px-4 uppercase tracking-widest transition duration-150"
+                    >
+                      S'abonner
+                    </button>
+                  </form>
+                </div>
+              </div>
+
             </div>
           )}
 
@@ -1254,7 +1552,7 @@ export default function App() {
                                   <span>{art.readTime} min</span>
                                 </div>
                               </div>
-                              <div className="w-full md:w-32 aspect-video md:aspect-square bg-gray-200 overflow-hidden grayscale contrast-125 flex-shrink-0 border border-[#e5e5e2]">
+                              <div className="w-full md:w-32 aspect-video md:aspect-square bg-gray-200 overflow-hidden flex-shrink-0 border border-[#e5e5e2]">
                                 <img src={art.image} alt={art.titleFr} className="w-full h-full object-cover transition duration-300 group-hover:scale-105" />
                               </div>
                             </div>
@@ -1337,7 +1635,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="w-full aspect-[21/9] bg-stone-100 overflow-hidden grayscale contrast-125 border border-[#e5e5e2]">
+                  <div className="w-full aspect-[21/9] bg-stone-100 overflow-hidden border border-[#e5e5e2]">
                     <img src={art.image} alt={art.titleFr} className="w-full h-full object-cover" />
                   </div>
 
@@ -1512,7 +1810,7 @@ export default function App() {
                       id={`podcast-item-${ep.id}`}
                       className="bg-white border border-[#e5e5e2] hover:border-black p-4 flex gap-4 transition-all relative group"
                     >
-                      <div className="w-20 h-20 bg-stone-100 overflow-hidden grayscale contrast-125 flex-shrink-0 border border-stone-200">
+                      <div className="w-20 h-20 bg-stone-100 overflow-hidden flex-shrink-0 border border-stone-200">
                         <img src={ep.imageUrl} alt={ep.titleFr} className="w-full h-full object-cover group-hover:scale-105 transition" />
                       </div>
                       <div className="flex-1 space-y-1 min-w-0">
@@ -2024,15 +2322,49 @@ export default function App() {
                       <option value="Culture & Société">Culture & Société</option>
                     </select>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold uppercase tracking-widest text-neutral-600">Image URL</label>
-                    <input 
-                      id="admin-art-image"
-                      type="text" value={artForm.image} 
-                      onChange={(e) => setArtForm({ ...artForm, image: e.target.value })}
-                      placeholder="https://images.unsplash.com/photo-..."
-                      className="w-full bg-[#f0f0ee] border text-xs p-2 focus:outline-none"
-                    />
+                  <div className="space-y-2 col-span-1 sm:col-span-2 border border-neutral-200 p-4 bg-white shadow-sm">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[#1a1a1a] block mb-1">Visuel de l'enquête</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-neutral-500">Option A : Saisir l'adresse URL</label>
+                        <input 
+                          id="admin-art-image"
+                          type="text" value={artForm.image} 
+                          onChange={(e) => setArtForm({ ...artForm, image: e.target.value })}
+                          placeholder="https://images.unsplash.com/photo-..."
+                          className="w-full bg-[#f0f0ee] border text-xs p-2 focus:outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-neutral-500">Option B : Importer un fichier image</label>
+                        <div className="relative border border-dashed border-neutral-300 hover:border-[#b91c1c] transition p-2 text-center bg-stone-50 cursor-pointer min-h-[38px] flex items-center justify-center">
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={(e) => handleFileUpload(e, 'article-image')}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          />
+                          <span className="text-[10px] text-neutral-600 truncate px-2">
+                            {artForm.image && artForm.image.startsWith('data:') ? '✓ Image sélectionnée' : 'Sélectionner une photo...'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {artForm.image && (
+                      <div className="mt-2 flex items-center gap-2 bg-[#f0f0ee] p-2">
+                        <img src={artForm.image} className="h-8 w-8 object-cover shadow" alt="Aperçu" />
+                        <div className="text-[9px] font-mono text-stone-600 truncate flex-1">
+                          Image chargée : {artForm.image.startsWith('data:') ? `Fichier Base64 (${Math.round(artForm.image.length / 1024)} KB)` : artForm.image}
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => setArtForm(p => ({ ...p, image: '' }))}
+                          className="text-[9px] text-[#b91c1c] uppercase font-bold hover:underline"
+                        >
+                          Effacer
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="col-span-1 sm:col-span-2 pt-2">
                     <button 
@@ -2062,15 +2394,93 @@ export default function App() {
                       className="w-full bg-[#f0f0ee] border text-xs p-2 focus:outline-none"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold uppercase tracking-widest text-neutral-600">Audio Stream URL</label>
-                    <input 
-                      id="admin-pod-audiourl"
-                      type="text" required value={podForm.audioUrl} 
-                      onChange={(e) => setPodForm({ ...podForm, audioUrl: e.target.value })}
-                      placeholder="https://www.soundhelix.com/mp3..."
-                      className="w-full bg-[#f0f0ee] border text-xs p-2 focus:outline-none"
-                    />
+                  <div className="space-y-2 col-span-1 sm:col-span-2 border border-neutral-200 p-4 bg-white shadow-sm">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[#1a1a1a] block mb-1">Fichier Audio de l'Épisode</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-neutral-500">Option A : Saisir l'adresse URL de l'audio</label>
+                        <input 
+                          id="admin-pod-audiourl"
+                          type="text" value={podForm.audioUrl} 
+                          onChange={(e) => setPodForm({ ...podForm, audioUrl: e.target.value })}
+                          placeholder="https://www.soundhelix.com/mp3..."
+                          className="w-full bg-[#f0f0ee] border text-xs p-2 focus:outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-neutral-500">Option B : Importer un fichier audio</label>
+                        <div className="relative border border-dashed border-neutral-300 hover:border-[#b91c1c] transition p-2 text-center bg-stone-50 cursor-pointer min-h-[38px] flex items-center justify-center">
+                          <input 
+                            type="file" 
+                            accept="audio/*" 
+                            onChange={(e) => handleFileUpload(e, 'podcast-audio')}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          />
+                          <span className="text-[10px] text-neutral-600 truncate px-2">
+                            {podForm.audioUrl && podForm.audioUrl.startsWith('data:') ? '✓ Audio sélectionné !' : 'Sélectionner un fichier audio...'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {podForm.audioUrl && (
+                      <div className="mt-2 flex items-center justify-between bg-[#f0f0ee] p-2 text-[9px]">
+                        <div className="font-mono text-stone-600 truncate flex-1">
+                          Audio chargé : {podForm.audioUrl.startsWith('data:') ? `Fichier Audio (${Math.round(podForm.audioUrl.length /  1024)} KB)` : podForm.audioUrl}
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => setPodForm(p => ({ ...p, audioUrl: '' }))}
+                          className="text-[#b91c1c] uppercase font-bold hover:underline ml-2"
+                        >
+                          Effacer
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2 col-span-1 sm:col-span-2 border border-neutral-200 p-4 bg-white shadow-sm">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[#1a1a1a] block mb-1">Image de Couverture (Optionnel)</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-neutral-500">Option A : Saisir l'adresse URL de l'image</label>
+                        <input 
+                          id="admin-pod-imageurl"
+                          type="text" value={podForm.imageUrl} 
+                          onChange={(e) => setPodForm({ ...podForm, imageUrl: e.target.value })}
+                          placeholder="https://images.unsplash.com/photo-..."
+                          className="w-full bg-[#f0f0ee] border text-xs p-2 focus:outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-neutral-500">Option B : Importer une image</label>
+                        <div className="relative border border-dashed border-neutral-300 hover:border-[#b91c1c] transition p-2 text-center bg-stone-50 cursor-pointer min-h-[38px] flex items-center justify-center">
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={(e) => handleFileUpload(e, 'podcast-image')}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          />
+                          <span className="text-[10px] text-neutral-600 truncate px-2">
+                            {podForm.imageUrl && podForm.imageUrl.startsWith('data:') ? '✓ Couverture sélectionnée' : 'Sélectionner un visuel de couverture...'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {podForm.imageUrl && (
+                      <div className="mt-2 flex items-center gap-2 bg-[#f0f0ee] p-2">
+                        <img src={podForm.imageUrl} className="h-8 w-8 object-cover shadow" alt="Aperçu couverture" />
+                        <div className="text-[9px] font-mono text-stone-600 truncate flex-1">
+                          Couverture chargée : {podForm.imageUrl.startsWith('data:') ? `Fichier Image (${Math.round(podForm.imageUrl.length / 1024)} KB)` : podForm.imageUrl}
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => setPodForm(p => ({ ...p, imageUrl: '' }))}
+                          className="text-[9px] text-[#b91c1c] uppercase font-bold hover:underline"
+                        >
+                          Effacer
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="col-span-1 sm:col-span-2 space-y-1">
                     <label className="text-[9px] font-bold uppercase tracking-widest text-neutral-600">Description (FR)</label>

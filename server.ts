@@ -281,7 +281,8 @@ async function startServer() {
     }
   });
 
-  app.use(express.json());
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
   // --- API MIDDLEWARE FOR AUTHENTICATION ---
   // Simple simulator returning user based on token in 'Authorization' header
