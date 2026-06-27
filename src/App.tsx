@@ -16,7 +16,7 @@ import {
 import { translations } from './translations.ts';
 import AudioPlayer from './components/AudioPlayer.tsx';
 import LiveChat from './components/LiveChat.tsx';
-import journalistProfilePhoto from './assets/images/journalist_profile_photo_new_1781019175427.png';
+import journalistProfilePhoto from './assets/images/journalist_avatar_1781948099950.jpg';
 
 export default function App() {
   const [lang, setLang] = useState<'fr' | 'en'>('fr');
@@ -989,7 +989,6 @@ export default function App() {
                  alt="Mangwa Thérèse" 
                  className="w-full h-auto object-contain transition duration-500"
                />
-               <div className="absolute inset-0 bg-[#be185d]/10 mix-blend-multiply"></div>
                <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black to-transparent">
                   <span className="text-white text-[10px] font-mono uppercase tracking-widest font-black">Mangwa Thérèse</span>
                </div>
@@ -1290,7 +1289,6 @@ export default function App() {
                       alt="Mangwa Thérèse" 
                       className="w-full h-full object-contain"
                     />
-                    <div className="absolute inset-0 bg-[#be185d]/10 mix-blend-multiply"></div>
                   </div>
                   <div className="flex-1 space-y-0.5">
                     <h2 className="text-xs font-sans font-black tracking-tight text-[#1a1a1a] uppercase">Mangwa Thérèse</h2>
